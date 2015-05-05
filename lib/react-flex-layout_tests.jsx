@@ -43,4 +43,59 @@ describe('react-flex-layout', function() {
       expect(flex2.offsetHeight).toBe(500)
       expect(flex2.offsetWidth).toBe(250)
   })
+
+  it('can have two flex height children', function() {
+      var container = document.createElement('div')
+      container.style.height = '500px'
+      container.style.width = '500px'
+      document.body.appendChild(container)
+      var toRender = <Layout fill='container'>
+          <Layout layoutHeight='flex' />
+          <Layout layoutHeight='flex' />
+        </Layout>
+      var layout = React.render(toRender, container)
+      var domLayout = React.findDOMNode(layout)
+      var flex1 = domLayout.children[0]
+      var flex2 = domLayout.children[1]
+      expect(flex1.offsetHeight).toBe(250)
+      expect(flex1.offsetWidth).toBe(500)
+      expect(flex2.offsetHeight).toBe(250)
+      expect(flex2.offsetWidth).toBe(500)
+  })
+
+
+
+  it('can have one fixed and one flex width children', function() {
+      var container = document.createElement('div')
+      container.style.height = '500px'
+      container.style.width = '500px'
+      document.body.appendChild(container)
+      var toRender = <Layout fill='container'>
+          <Layout layoutWidth='100' />
+          <Layout layoutWidth='flex' />
+        </Layout>
+      var layout = React.render(toRender, container)
+      var domLayout = React.findDOMNode(layout)
+      var flex1 = domLayout.children[0]
+      var flex2 = domLayout.children[1]
+      expect(flex1.offsetWidth).toBe(100)
+      expect(flex2.offsetWidth).toBe(400)
+  })
+
+  it('can have one fixed and one flex height children', function() {
+      var container = document.createElement('div')
+      container.style.height = '500px'
+      container.style.width = '500px'
+      document.body.appendChild(container)
+      var toRender = <Layout fill='container'>
+          <Layout layoutHeight='100' />
+          <Layout layoutHeight='flex' />
+        </Layout>
+      var layout = React.render(toRender, container)
+      var domLayout = React.findDOMNode(layout)
+      var flex1 = domLayout.children[0]
+      var flex2 = domLayout.children[1]
+      expect(flex1.offsetHeight).toBe(100)
+      expect(flex2.offsetHeight).toBe(400)
+  })
 })

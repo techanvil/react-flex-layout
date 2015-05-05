@@ -53,7 +53,7 @@ export default class Layout extends React.Component {
           state.calculatedFlexWidth = (layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
         }
         if (numberOfFlexHeights > 0) {
-          state.calculatedFixedHeight = (layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
+          state.calculatedFlexHeight = (layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
         }
       }
       this.setState(state)
