@@ -3,6 +3,7 @@ import expect from 'expect'
 import Layout from './react-flex-layout.jsx'
 
 var TestUtils = React.addons.TestUtils
+document.body.style.margin = 0
 
 describe('react-flex-layout', function() {
   it('can fill the browser frame', function() {
@@ -16,12 +17,12 @@ describe('react-flex-layout', function() {
     var container = document.createElement('div')
     container.style.height = '500px'
     container.style.width = '50%'
-    document.body.style.margin = 0
     document.body.appendChild(container)
     var layout = React.render(<Layout fill='container' />, container)
     var domLayout = React.findDOMNode(layout)
     expect(domLayout.offsetHeight).toBe(500)
-    expect(domLayout.offsetWidth).toBe(window.innerWidth / 2)
+    var difference = domLayout.offsetWidth - (window.innerWidth / 2)
+    expect(difference).toBeLessThan(1, 'differnce was greater than 1')
   })
 
   it('can have two flex width children', function() {
@@ -29,7 +30,11 @@ describe('react-flex-layout', function() {
       container.style.height = '500px'
       container.style.width = '500px'
       document.body.appendChild(container)
-      var layout = React.render(<Layout fill='container'><Layout layoutWidth='flex' /><Layout layoutWidth='flex' /></Layout>, container)
+      var toRender = <Layout fill='container'>
+          <Layout layoutWidth='flex' />
+          <Layout layoutWidth='flex' />
+        </Layout>
+      var layout = React.render(toRender, container)
       var domLayout = React.findDOMNode(layout)
       var flex1 = domLayout.children[0]
       var flex2 = domLayout.children[1]
