@@ -63,15 +63,13 @@ describe('react-flex-layout', function() {
       expect(flex2.offsetWidth).toBe(500)
   })
 
-
-
   it('can have one fixed and one flex width children', function() {
       var container = document.createElement('div')
       container.style.height = '500px'
       container.style.width = '500px'
       document.body.appendChild(container)
       var toRender = <Layout fill='container'>
-          <Layout layoutWidth='100' />
+          <Layout layoutWidth={100} />
           <Layout layoutWidth='flex' />
         </Layout>
       var layout = React.render(toRender, container)
@@ -88,7 +86,7 @@ describe('react-flex-layout', function() {
       container.style.width = '500px'
       document.body.appendChild(container)
       var toRender = <Layout fill='container'>
-          <Layout layoutHeight='100' />
+          <Layout layoutHeight={100} />
           <Layout layoutHeight='flex' />
         </Layout>
       var layout = React.render(toRender, container)
@@ -98,4 +96,9 @@ describe('react-flex-layout', function() {
       expect(flex1.offsetHeight).toBe(100)
       expect(flex2.offsetHeight).toBe(400)
   })
+
+  // TODO <Layout layoutWidth='100' /> --- need to coerce to a number
+  // TODO Children of Layout is rendered properly
+  // TODO Multiple nested, one horizontal, one vertical
+  // TODO Text content <Layout>Foo</Layout>
 })

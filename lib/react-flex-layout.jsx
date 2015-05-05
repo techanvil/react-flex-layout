@@ -49,6 +49,9 @@ export default class Layout extends React.Component {
             else if (this.isNumber(child.props.layoutHeight)) { totalAllocatedHeight += child.props.layoutHeight }
           }
         }
+        if (numberOfFlexHeights > 0 && numberOfFlexWidths > 0) {
+          throw 'Cannot have layout children with both flex widths and heights'
+        }
         if (numberOfFlexWidths > 0) {
           state.calculatedFlexWidth = (layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
         }
@@ -61,25 +64,28 @@ export default class Layout extends React.Component {
   }
 
   render() {
-    var width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : this.state.layoutWidth
-    var height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : this.state.layoutHeight
+    var width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.props.layoutWidth || this.state.layoutWidth)
+    var height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.props.layoutHeight || this.state.layoutHeight)
     var style = {
       width: width,
       height: height
     }
-    if (this.state.calculatedFlexWidth || this.state.calculatedFlexHeight) {
-      var calculatedFlexWidth = this.state.calculatedFlexWidth
-      var calculatedFlexHeight = this.state.calculatedFlexHeight
-      var children = React.Children.map(
-        this.props.children,
-        child => {
+    var calculatedFlexWidth = this.state.calculatedFlexWidth
+    var calculatedFlexHeight = this.state.calculatedFlexHeight
+    var children = React.Children.map(
+      this.props.children,
+      child => {
+        if (child instanceof React.Component) {
           var cloned = React.cloneElement(child, {
             calculatedFlexWidth: calculatedFlexWidth,
-            calculatedFlexHeight: calculatedFlexHeight
+            calculatedFlexHeight: calculatedFlexHeight,
+            layoutWidth: child.props.layoutWidth || width,
+            layoutHeight: child.props.layoutHeight || height
           })
           return cloned
-        })
-    }
+        }
+        return child
+      })
     return <div style={style}>{children}</div>
   }
 
