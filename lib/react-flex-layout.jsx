@@ -12,18 +12,14 @@ export default class Layout extends React.Component {
     this.handleResize()
   }
 
-  componentWillMount() {
-    this.handleResize(true)
-  }
-
-  componentWillDismount() {
+  componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
   }
 
-  handleResize(willMount) {
+  handleResize() {
     if (this.props.fill === 'window' && window) {
       this.setLayoutDimensions(window.innerWidth, window.innerHeight)
-    } else if (!willMount) {
+    } else {
       var domNode = React.findDOMNode(this)
       this.setLayoutDimensions(domNode.parentElement.clientWidth, domNode.parentElement.clientHeight)
     }
@@ -64,9 +60,14 @@ export default class Layout extends React.Component {
   }
 
   render() {
-    var width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.props.layoutWidth || this.state.layoutWidth)
-    var height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.props.layoutHeight || this.state.layoutHeight)
+    var width = this.props.layoutWidth === 'flex'
+        ? this.props.calculatedFlexWidth
+        : (this.props.layoutWidth || this.state.layoutWidth)
+    var height = this.props.layoutHeight === 'flex'
+        ? this.props.calculatedFlexHeight
+        : (this.props.layoutHeight || this.state.layoutHeight)
     var style = this.props.style || {}
+    style.overflow = 'hidden'
     style.width = width
     style.height = height
     var calculatedFlexWidth = this.state.calculatedFlexWidth
