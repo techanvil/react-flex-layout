@@ -76,6 +76,7 @@ export default class Layout extends React.Component {
       this.props.children,
       child => {
         if (child._isReactElement) {
+          debugger
           var newProps = {
             calculatedFlexWidth: calculatedFlexWidth,
             calculatedFlexHeight: calculatedFlexHeight,
