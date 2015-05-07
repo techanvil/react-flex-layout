@@ -5,6 +5,16 @@ import Layout from './react-flex-layout.jsx'
 var TestUtils = React.addons.TestUtils
 document.body.style.margin = 0
 
+class TestThingo extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <div>Test thingo content</div>
+  }
+}
+
 describe('react-flex-layout', function() {
   it('can fill the browser frame', function() {
     var layout = TestUtils.renderIntoDocument(<Layout fill='window' />)
@@ -119,8 +129,63 @@ describe('react-flex-layout', function() {
     expect(() => TestUtils.renderIntoDocument(<Layout layoutWidth='100' />)).toThrow()
   })
 
-  // TODO Children of Layout is rendered properly
-  // TODO Multiple nested, one horizontal, one vertical
+  it('Children of layout are rendered', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var toRender = <Layout fill='container'>
+        <Layout layoutWidth={100}><TestThingo /></Layout>
+        <Layout layoutWidth='flex'><TestThingo /></Layout>
+      </Layout>
+    var layout = React.render(toRender, container)
+    var found = TestUtils.scryRenderedComponentsWithType(layout, TestThingo)
+    expect(found.length).toBe(2)
+  })
+
+  it('Child text of layout is rendered', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var toRender = <Layout fill='container'>
+        <Layout layoutWidth={100}><TestThingo /></Layout>
+        <Layout layoutWidth='flex'>SomethingElse</Layout>
+      </Layout>
+    var layout = React.render(toRender, container)
+    var layoutNode = React.findDOMNode(layout.refs.layout1)
+    expect(layoutNode.innerText).toContain('SomethingElse')
+  })
+
+  it('Can nest', function() {
+      var container = document.createElement('div')
+      container.style.height = '500px'
+      container.style.width = '500px'
+      document.body.appendChild(container)
+      var toRender = <Layout fill='container'>
+          <Layout layoutHeight={100}>Header</Layout>
+          <Layout layoutHeight='flex'>
+            <Layout layoutWidth={100}>Column 1</Layout>
+            <Layout layoutWidth='flex'>Flex column</Layout>
+          </Layout>
+        </Layout>
+      var layout = React.render(toRender, container)
+      var verticalContainer = layout.refs.layout1
+      var layoutNode = React.findDOMNode(layout)
+      expect(layoutNode.children[0].offsetHeight).toBe(100)
+      expect(layoutNode.children[1].offsetHeight).toBe(400)
+      expect(layoutNode.children[0].offsetWidth).toBe(500)
+      expect(layoutNode.children[1].offsetWidth).toBe(500)
+
+      var verticalContainerNode = React.findDOMNode(verticalContainer)
+      expect(verticalContainerNode.children[0].offsetWidth).toBe(100)
+      expect(verticalContainerNode.children[1].offsetWidth).toBe(400)
+      expect(verticalContainerNode.children[0].offsetHeight).toBe(400)
+      expect(verticalContainerNode.children[1].offsetHeight).toBe(400)
+  })
+
   // TODO Text content <Layout>Foo</Layout>
   // TODO Children of layout must specify layoutHeight or layoutWidth
+  // TODO Can add classes to Layout
+  // TODO Can add styles to layout
 })
