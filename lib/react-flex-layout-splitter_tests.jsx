@@ -8,3 +8,4 @@ var TestUtils = React.addons.TestUtils
 // TODO flex on the left
 // TODO flex on the right
 // TODO Both fixed size
+// TODO Hides selection

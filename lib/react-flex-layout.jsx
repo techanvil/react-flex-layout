@@ -6,7 +6,8 @@ export default class Layout extends React.Component {
     super(props)
     this.state = {
       layoutWidth: 0,
-      layoutHeight: 0
+      layoutHeight: 0,
+      hideSelection: false
     }
     if (props.layoutWidth !== 'flex') {
       // TODO throw if not number
@@ -130,6 +131,13 @@ export default class Layout extends React.Component {
           return cloned
         } else if (child.type === LayoutSplitter) {
           var newProps = {
+            hideSelection: () => {
+              this.setState({ hideSelection: true })
+            },
+            restoreSelection: () => {
+              this.clearSelection()
+              this.setState({ hideSelection: false })
+            },
             getPreviousLayout: () => {
               var index = this.props.children.indexOf(child)
               return this.refs['layout' + (index - 1)]
@@ -144,10 +152,31 @@ export default class Layout extends React.Component {
         }
         return child
       })
-    return <div style={style}>{children}</div>
+
+      var className = null
+      if (this.state.hideSelection) {
+        className = 'hideSelection'
+      }
+    return <div style={style} className={className}>{children}</div>
   }
 
   isNumber(value) {
     return typeof value === 'number';
   }
+
+  clearSelection() {
+    if (window.getSelection) {
+      if (window.getSelection().empty) {  // Chrome
+        window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) {  // Firefox
+        window.getSelection().removeAllRanges();
+      }
+    } else if (document.selection) {  // IE?
+      document.selection.empty();
+    }
+  }
+}
+
+Layout.propTypes = {
+  hideSelection: React.PropTypes.bool
 }

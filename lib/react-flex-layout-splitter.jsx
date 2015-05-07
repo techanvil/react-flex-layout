@@ -5,7 +5,8 @@ export default class LayoutSplitter extends React.Component {
     super(props)
 
     this.state = {
-      active: false
+      active: false,
+      orientation: 'horizontal'
     }
     this.up = this.up.bind(this)
     this.move = this.move.bind(this)
@@ -23,46 +24,63 @@ export default class LayoutSplitter extends React.Component {
 
   move(event) {
     if (this.state.active) {
-      let layout1 = this.props.getPreviousLayout()
-      let layout2 = this.props.getNextLayout()
-      if (layout1 && layout2) {
-        let current = this.props.orientation === 'horizontal' ? event.clientX : event.clientY
-        let position = this.state.position
-
-        let isLayout1Flex = layout1.props.layoutWidth === 'flex'
-        let isLayout2Flex = layout2.props.layoutWidth === 'flex'
-        if (isLayout1Flex && isLayout2Flex) {
-          throw 'Do not support resizing two flex Layouts'
-        } else if (isLayout1Flex) {
-          // Layout 2 has fixed size
-          let newSize = layout2.props.layoutWidth - (current - position)
-          layout2.setState({layoutWidth: newSize})
-        } else if (isLayout2Flex) {
-          // Layout 1 has fixed size
-          let newSize = layout1.props.layoutWidth - (position - current)
-          layout1.setState({layoutWidth: newSize})
-        } else {
-          // Both are fixed width
-          let delta = position - current
-          let panel1NewSize = layout1.props.layoutWidth - delta
-          let panel2NewSize = layout2.props.layoutWidth + delta
-          layout1.setState({layoutWidth: panel1NewSize})
-          layout2.setState({layoutWidth: panel2NewSize})
-        }
-      }
+      let currentPosition = this.state.orientation === 'horizontal' ? event.clientX : event.clientY;
+      this.state.newPositionHandler(currentPosition)
     }
   }
 
   up() {
-    this.setState({ active: false })
+    if (this.state.active) {
+      this.setState({ active: false })
+      this.props.restoreSelection()
+    }
   }
 
   handleDown(event) {
-    let position = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
-    this.setState({
+    let downPosition = this.state.orientation === 'horizontal' ? event.clientX : event.clientY;
+    let layout1 = this.props.getPreviousLayout()
+    let layout2 = this.props.getNextLayout()
+    if (layout1 && layout2) {
+      this.props.hideSelection()
+      let isLayout1Flex = layout1.props.layoutWidth === 'flex'
+      let isLayout2Flex = layout2.props.layoutWidth === 'flex'
+      let newPositionHandler
+
+      if (isLayout1Flex && isLayout2Flex) {
+        throw 'Do not support resizing two flex Layouts'
+      } else if (isLayout1Flex) {
+        // Layout 2 has fixed size
+        let originalWidth = layout2.state.layoutWidth
+        newPositionHandler = (currentPosition) => {
+          let delta = downPosition - currentPosition
+          let newSize = originalWidth + delta
+          layout2.setWidth(newSize)
+        }
+      } else if (isLayout2Flex) {
+        // Layout 1 has fixed size
+        let originalWidth = layout1.state.layoutWidth
+        newPositionHandler = (currentPosition) => {
+          let delta = currentPosition - downPosition
+          let newSize = originalWidth + delta
+          layout1.setWidth(newSize)
+        }
+      }
+      else {
+        // Both are fixed width
+        let originalWidth1 = layout1.state.layoutWidth
+        let originalWidth2 = layout1.state.layoutWidth
+        newPositionHandler = (currentPosition) => {
+          let delta = currentPosition - downPosition
+          layout1.setWidth(originalWidth1 + delta)
+          layout2.setWidth(originalWidth2 - delta)
+        }
+      }
+
+      this.setState({
         active: true,
-        position: position
-    })
+        newPositionHandler: newPositionHandler
+      })
+    }
   }
 
   render() {
