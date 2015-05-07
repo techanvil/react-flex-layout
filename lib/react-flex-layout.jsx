@@ -73,11 +73,11 @@ export default class Layout extends React.Component {
       let totalAllocatedWidth = 0
       let numberOfFlexHeights = 0
       let totalAllocatedHeight = 0
-      for (let i = 0; i < this.props.children.length; i++) {
-        var childDefinition = this.props.children[i]
+      let i = 0
+      React.Children.map(this.props.children, childDefinition => {
         var childType = childDefinition.type
         if (childType === Layout && !childDefinition.props.layoutWidth && !childDefinition.props.layoutHeight) {
-          throw 'Child Layouts must have either layoutWidth or layoutHeight set'
+          throw new Error('Child Layouts must have either layoutWidth or layoutHeight set')
         }
 
         if (childType === Layout || childType === LayoutSplitter) {
@@ -90,9 +90,11 @@ export default class Layout extends React.Component {
           else if (!child && this.isNumber(childDefinition.props.layoutHeight)) { totalAllocatedHeight += childDefinition.props.layoutHeight }
           else if (child && this.isNumber(child.state.layoutHeight)) { totalAllocatedHeight += child.state.layoutHeight }
         }
-      }
+        i++
+      })
+
       if (numberOfFlexHeights > 0 && numberOfFlexWidths > 0) {
-        throw 'Cannot have layout children with both flex widths and heights'
+        throw new Error('Cannot have layout children with both flex widths and heights')
       }
       if (numberOfFlexWidths > 0) {
         var thisWidth = this.state.layoutWidth || this.props.containerWidth
@@ -105,7 +107,7 @@ export default class Layout extends React.Component {
       let isHorizontal = numberOfFlexWidths > 0 || totalAllocatedWidth > 0
       let isVertical = numberOfFlexHeights > 0 || totalAllocatedHeight > 0
       if (isHorizontal && isVertical) {
-        throw 'You can only specify layoutHeight or layoutWidth at a single level'
+        throw new Error('You can only specify layoutHeight or layoutWidth at a single level')
       } else if (isHorizontal) {
         newFlexDimentions.orientation = 'horizontal'
       } else if (isVertical) {
@@ -180,8 +182,12 @@ export default class Layout extends React.Component {
       })
 
       let className = null
+      if (this.props.className) {
+        className = this.props.className
+      }
       if (this.state.hideSelection) {
-        className = 'hideSelection'
+        if (className) { className += ' ' }
+        className += 'hideSelection'
       }
     return <div style={style} className={className}>{children}</div>
   }

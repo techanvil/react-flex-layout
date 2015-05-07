@@ -184,8 +184,37 @@ describe('react-flex-layout', function() {
       expect(verticalContainerNode.children[1].offsetHeight).toBe(400)
   })
 
-  // TODO Text content <Layout>Foo</Layout>
-  // TODO Children of layout must specify layoutHeight or layoutWidth
-  // TODO Can add classes to Layout
-  // TODO Can add styles to layout
+  it('throws when invalid layout width is specified', function() {
+      var container = document.createElement('div')
+      container.style.height = '500px'
+      container.style.width = '500px'
+      document.body.appendChild(container)
+    expect(() => React.render(<Layout><Layout /></Layout>, container)).toThrow()
+  })
+
+  it('Can add classname to layout', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var rendered = React.render(<Layout className='outer'><Layout className='inner' layoutWidth='flex' /></Layout>, container)
+    var renderedNode = React.findDOMNode(rendered)
+    var innerNode = React.findDOMNode(rendered.refs.layout0)
+    expect(renderedNode.className).toBe('outer')
+    expect(innerNode.className).toBe('inner')
+  })
+
+  it('Can add style to layout', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var rendered = React.render(<Layout style={{border: '1px solid #000'}}>
+        <Layout style={{backgroundColor: '#eee'}} layoutWidth='flex' />
+      </Layout>, container)
+    var renderedNode = React.findDOMNode(rendered)
+    var innerNode = React.findDOMNode(rendered.refs.layout0)
+    expect(renderedNode.getAttribute('style')).toContain('border: 1px solid rgb(0, 0, 0)')
+    expect(innerNode.getAttribute('style')).toContain('background-color:#eee')
+  })
 })
