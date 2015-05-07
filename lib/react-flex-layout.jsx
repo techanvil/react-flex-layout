@@ -34,7 +34,7 @@ export default class Layout extends React.Component {
     if (this.props.fill === 'window' && window) {
       this.setState({ layoutWidth: window.innerWidth, layoutHeight: window.innerHeight })
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
-      var domNode = React.findDOMNode(this)
+      let domNode = React.findDOMNode(this)
       this.setState({ layoutWidth: domNode.parentElement.clientWidth, layoutHeight: domNode.parentElement.clientHeight })
     }
   }
@@ -60,18 +60,18 @@ export default class Layout extends React.Component {
   }
 
   recalculateFlexLayout() {
-    var newFlexDimentions = {}
+    let newFlexDimentions = {}
     if (this.props.children) {
-      var numberOfFlexWidths = 0
-      var totalAllocatedWidth = 0
-      var numberOfFlexHeights = 0
-      var totalAllocatedHeight = 0
-      for (var i = 0; i < this.props.children.length; i++) {
+      let numberOfFlexWidths = 0
+      let totalAllocatedWidth = 0
+      let numberOfFlexHeights = 0
+      let totalAllocatedHeight = 0
+      for (let i = 0; i < this.props.children.length; i++) {
         var childDefinition = this.props.children[i]
         var childType = childDefinition.type
 
         if (childType === Layout || childType === LayoutSplitter) {
-          var child = this.refs['layout' + i]
+          let child = this.refs['layout' + i]
           if (childDefinition.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
           else if (!child && this.isNumber(childDefinition.props.layoutWidth)) { totalAllocatedWidth += childDefinition.props.layoutWidth }
           else if (child && this.isNumber(child.state.layoutWidth)) { totalAllocatedWidth += child.state.layoutWidth }
@@ -96,25 +96,25 @@ export default class Layout extends React.Component {
   }
 
   render() {
-    var width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.state.layoutWidth || this.props.containerWidth)
-    var height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.state.layoutHeight || this.props.containerHeight)
+    let width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.state.layoutWidth || this.props.containerWidth)
+    let height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.state.layoutHeight || this.props.containerHeight)
 
     if (!width || !height) {
       // We don't know our size yet (maybe initial render)
       return <div />
     }
-    var style = this.props.style || {}
+    let style = this.props.style || {}
     style.overflow = 'hidden'
     style.width = width
     style.height = height
-    var count = -1
-    var calculatedFlexDimentions = this.recalculateFlexLayout()
-    var children = React.Children.map(
+    let count = -1
+    let calculatedFlexDimentions = this.recalculateFlexLayout()
+    let children = React.Children.map(
       this.props.children,
       child => {
         count++
         if (child.type === Layout) {
-          var newProps = {
+          let newProps = {
             layoutChanged: this.childLayoutChanged.bind(this),
             calculatedFlexWidth: calculatedFlexDimentions.width,
             calculatedFlexHeight: calculatedFlexDimentions.height,
@@ -123,14 +123,14 @@ export default class Layout extends React.Component {
             ref: 'layout' + count
           }
           if (calculatedFlexDimentions.width) {
-            var childStyle = child.props.style || {}
+            let childStyle = child.props.style || {}
             childStyle.float = 'left'
             newProps.style = childStyle
           }
-          var cloned = React.cloneElement(child, newProps)
+          let cloned = React.cloneElement(child, newProps)
           return cloned
         } else if (child.type === LayoutSplitter) {
-          var newProps = {
+          let newProps = {
             hideSelection: () => {
               this.setState({ hideSelection: true })
             },
@@ -139,21 +139,21 @@ export default class Layout extends React.Component {
               this.setState({ hideSelection: false })
             },
             getPreviousLayout: () => {
-              var index = this.props.children.indexOf(child)
+              let index = this.props.children.indexOf(child)
               return this.refs['layout' + (index - 1)]
             },
             getNextLayout: () => {
-              var index = this.props.children.indexOf(child)
+              let index = this.props.children.indexOf(child)
               return this.refs['layout' + (index + 1)]
             }
           }
-          var cloned = React.cloneElement(child, newProps)
+          let cloned = React.cloneElement(child, newProps)
           return cloned
         }
         return child
       })
 
-      var className = null
+      let className = null
       if (this.state.hideSelection) {
         className = 'hideSelection'
       }
