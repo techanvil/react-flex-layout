@@ -89,6 +89,24 @@ class VerticalResizer extends React.Component {
   }
 }
 
+class Nested extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <Layout>
+      <Layout layoutWidth={100}>Column1</Layout>
+      <LayoutSplitter />
+      <Layout layoutWidth='flex'>
+        <Layout layoutHeight={200}>Row 1</Layout>
+        <LayoutSplitter />
+        <Layout layoutHeight='flex'>Row 2</Layout>
+      </Layout>
+    </Layout>
+  }
+}
+
 class Example extends React.Component {
   constructor(props) {
     super(props)
@@ -114,6 +132,9 @@ class Example extends React.Component {
     locationBar.route(/verticalresize/, () => {
       this.setState({page: <VerticalResizer />})
     })
+    locationBar.route(/nested/, () => {
+      this.setState({page: <Nested />})
+    })
     locationBar.start()
   }
 
@@ -126,7 +147,8 @@ class Example extends React.Component {
         <a href='#threecolumn'>Three column</a> |
         <a href='#oneflexhorizontalresize'>Horizontal Splitter</a> |
         <a href='#bothfixedhorizontalresize'>Both fixed Horizontal Splitter</a> |
-        <a href='#verticalresize'>Vertical Splitter</a>
+        <a href='#verticalresize'>Vertical Splitter</a> |
+        <a href='#nested'>Nested</a>
       </Layout>
       <Layout layoutHeight='flex'>
         {example}

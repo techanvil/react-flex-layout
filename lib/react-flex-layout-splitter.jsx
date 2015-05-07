@@ -15,11 +15,13 @@ export default class LayoutSplitter extends React.Component {
     document.addEventListener('mouseup', this.up)
     document.addEventListener('mousemove', this.move)
     if (this.props.orientation === 'horizontal') {
-      this.setState({layoutWidth: this.props.layoutWidth || 11})
+      this.state.layoutWidth = this.props.layoutWidth || 11
+      this.setState(this.state)
       this.props.layoutChanged()
     }
     if (this.props.orientation === 'vertical') {
-      this.setState({layoutHeight: this.props.layoutHeight || 11})
+      this.state.layoutHeight = this.props.layoutHeight || 11
+      this.setState(this.state)
       this.props.layoutChanged()
     }
   }
