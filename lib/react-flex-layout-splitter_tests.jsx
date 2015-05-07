@@ -39,7 +39,7 @@ describe('Layout splitter component', function() {
       </Layout>
     var rendered = React.render(components, container)
     var splitterNode = React.findDOMNode(rendered.refs.layout1)
-    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, ClientY: 100 })
+    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, clientY: 100 })
     mouseMove({ clientX: 110, clientY: 100 })
     var layout1 = React.findDOMNode(rendered.refs.layout0)
     var layout2 = React.findDOMNode(rendered.refs.layout2)
@@ -65,12 +65,64 @@ describe('Layout splitter component', function() {
       </Layout>
     var rendered = React.render(components, container)
     var splitterNode = React.findDOMNode(rendered.refs.layout1)
-    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, ClientY: 100 })
+    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, clientY: 100 })
     mouseMove({ clientX: 110, clientY: 100 })
     var layout1 = React.findDOMNode(rendered.refs.layout0)
     var layout2 = React.findDOMNode(rendered.refs.layout2)
     expect(layout1.offsetWidth).toBe(410 - 11)
     expect(layout2.offsetWidth).toBe(90)
+  })
+
+  it('Fixed panel on top', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var mouseMove
+    var fakeDocument = { addEventListener: (e, h) => {
+      if (e === 'mousemove') {
+        mouseMove = h
+      }
+    }}
+    var components = <Layout>
+        <Layout layoutHeight={100} />
+        <LayoutSplitter document={fakeDocument} />
+        <Layout layoutHeight='flex' />
+      </Layout>
+    var rendered = React.render(components, container)
+    var splitterNode = React.findDOMNode(rendered.refs.layout1)
+    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, clientY: 100 })
+    mouseMove({ clientX: 100, clientY: 110 })
+    var layout1 = React.findDOMNode(rendered.refs.layout0)
+    var layout2 = React.findDOMNode(rendered.refs.layout2)
+    expect(layout1.offsetHeight).toBe(110)
+    expect(layout2.offsetHeight).toBe(390 - 11)
+  })
+
+  it('Fixed panel on bottom', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var mouseMove
+    var fakeDocument = { addEventListener: (e, h) => {
+      if (e === 'mousemove') {
+        mouseMove = h
+      }
+    }}
+    var components = <Layout>
+        <Layout layoutHeight='flex' />
+        <LayoutSplitter document={fakeDocument} />
+        <Layout layoutHeight={100} />
+      </Layout>
+    var rendered = React.render(components, container)
+    var splitterNode = React.findDOMNode(rendered.refs.layout1)
+    TestUtils.Simulate.mouseDown(splitterNode, { clientX: 100, clientY: 100 })
+    mouseMove({ clientX: 100, clientY: 110 })
+    var layout1 = React.findDOMNode(rendered.refs.layout0)
+    var layout2 = React.findDOMNode(rendered.refs.layout2)
+    expect(layout1.offsetHeight).toBe(410 - 11)
+    expect(layout2.offsetHeight).toBe(90)
   })
 })
 
