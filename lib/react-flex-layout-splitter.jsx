@@ -3,17 +3,19 @@ import React from 'react'
 export default class LayoutSplitter extends React.Component {
   constructor(props) {
     super(props)
+    this.document = props.document || document
 
     this.state = {
       active: false
     }
-    this.up = this.up.bind(this)
-    this.move = this.move.bind(this)
+    this.handleMouseUp = this.handleMouseUp.bind(this)
+    this.handleMouseMove = this.handleMouseMove.bind(this)
+    this.handleMouseDown = this.handleMouseDown.bind(this)
   }
 
   componentDidMount() {
-    document.addEventListener('mouseup', this.up)
-    document.addEventListener('mousemove', this.move)
+    this.document.addEventListener('mouseup', this.handleMouseUp)
+    this.document.addEventListener('mousemove', this.handleMouseMove)
     if (this.props.orientation === 'horizontal') {
       this.state.layoutWidth = this.props.layoutWidth || 11
       this.setState(this.state)
@@ -27,30 +29,34 @@ export default class LayoutSplitter extends React.Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mouseup', this.up)
-    document.removeEventListener('mousemove', this.move)
+    this.document.removeEventListener('mouseup', this.handleMouseUp)
+    this.document.removeEventListener('mousemove', this.handleMouseMove)
   }
 
-  move(event) {
+  handleMouseMove(event) {
     if (this.state.active) {
       let currentPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
       this.state.newPositionHandler(currentPosition)
     }
   }
 
-  up() {
+  handleMouseUp() {
     if (this.state.active) {
       this.setState({ active: false })
       this.props.restoreSelection()
     }
   }
 
-  handleDown(event) {
+  handleMouseDown(event) {
     let downPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
-    let layout1 = this.props.getPreviousLayout()
-    let layout2 = this.props.getNextLayout()
     let layoutProp = this.props.orientation === 'horizontal' ? 'layoutWidth' : 'layoutHeight'
     let updateFunctionName = this.props.orientation === 'horizontal' ? 'setWidth' : 'setHeight'
+    let layout1 = this.props.getPreviousLayout()
+    let layout2 = this.props.getNextLayout()
+    if ((layout1.props.layoutWidth === 'flex' && layout2.props.layoutWidth === 'flex') ||
+        (layout1.props.layoutHeight === 'flex' && layout2.props.layoutHeight === 'flex')) {
+      throw new Error('You cannot place a LayoutSplitter between two flex Layouts')
+    }
 
     if (layout1 && layout2) {
       this.props.hideSelection()
@@ -59,7 +65,7 @@ export default class LayoutSplitter extends React.Component {
       let newPositionHandler
 
       if (isLayout1Flex && isLayout2Flex) {
-        throw 'Do not support resizing two flex Layouts'
+        throw new Error('Do not support resizing two flex Layouts')
       } else if (isLayout1Flex) {
         // Layout 2 has fixed size
         let originalSize = layout2.state[layoutProp]
@@ -98,13 +104,12 @@ export default class LayoutSplitter extends React.Component {
   render() {
     //let orientation = this.props.orientation;
     let classes = ['Resizer', this.props.orientation];
-    let downHandler = this.handleDown.bind(this)
     let style = {
       width: this.state.layoutWidth || this.props.containerWidth,
       height: this.state.layoutHeight || this.props.containerHeight
     }
 
-    return <div className={classes.join(' ')} style={style} onMouseDown={downHandler} />
+    return <div className={classes.join(' ')} style={style} onMouseDown={this.handleMouseDown} />
   }
 }
 
