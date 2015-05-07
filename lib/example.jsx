@@ -1,5 +1,6 @@
 import React from 'react'
 import Layout from './react-flex-layout.jsx'
+import LayoutSplitter from './react-flex-layout-splitter.jsx'
 import domready from 'domready'
 import LocationBar from 'location-bar'
 var locationBar = new LocationBar();
@@ -16,6 +17,7 @@ class Horizontal extends React.Component {
     </Layout>
   }
 }
+
 class FixedRightPane extends React.Component {
   constructor(props) {
     super(props)
@@ -42,6 +44,21 @@ class ThreeColumn extends React.Component {
     </Layout>
   }
 }
+
+class HorizontalResizer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <Layout>
+      <Layout layoutWidth={100}>Column1</Layout>
+      <LayoutSplitter />
+      <Layout layoutWidth='flex'>Column2</Layout>
+    </Layout>
+  }
+}
+
 class Example extends React.Component {
   constructor(props) {
     super(props)
@@ -58,6 +75,9 @@ class Example extends React.Component {
     locationBar.route(/threecolumn/, () => {
       this.setState({page: <ThreeColumn />})
     })
+    locationBar.route(/horizontalresize/, () => {
+      this.setState({page: <HorizontalResizer />})
+    })
     locationBar.start()
   }
 
@@ -67,7 +87,8 @@ class Example extends React.Component {
       <Layout layoutHeight={100}>
         <a href='#horizontal'>Horizontal</a> |
         <a href='#fixedright'>Fixed right column</a> |
-        <a href='#threecolumn'>Three column</a>
+        <a href='#threecolumn'>Three column</a> |
+        <a href='#horizontalresize'>Horizontal Splitter</a>
       </Layout>
       <Layout layoutHeight='flex'>
         {example}
