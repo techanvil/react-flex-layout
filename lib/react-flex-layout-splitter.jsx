@@ -85,12 +85,12 @@ export default class LayoutSplitter extends React.Component {
       }
       else {
         // Both are fixed width
-        let originalWidth1 = layout1.state.layoutWidth
-        let originalWidth2 = layout2.state.layoutWidth
+        let originalSize1 = layout1.state[layoutProp]
+        let originalSize2 = layout2.state[layoutProp]
         newPositionHandler = (currentPosition) => {
           let delta = currentPosition - downPosition
-          layout1[updateFunctionName](originalWidth1 + delta)
-          layout2[updateFunctionName](originalWidth2 - delta)
+          layout1[updateFunctionName](originalSize1 + delta)
+          layout2[updateFunctionName](originalSize2 - delta)
         }
       }
 
