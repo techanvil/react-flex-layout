@@ -10,7 +10,7 @@
     "test": "karma start --autowatch --no-single-run"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-core": "^5.2.3",
     "babel-loader": "^5.0.0",
