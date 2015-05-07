@@ -8,11 +8,15 @@ export default class Layout extends React.Component {
       hideSelection: false
     }
     if (props.layoutWidth !== 'flex') {
-      // TODO throw if not number
+      if (props.layoutWidth && !this.isNumber(props.layoutWidth)) {
+        throw new Error('layoutWidth should be a number or flex')
+      }
       this.state.layoutWidth = props.layoutWidth
     }
     if (props.layoutHeight !== 'flex') {
-      // TODO throw if not number
+      if (props.layoutHeight && !this.isNumber(props.layoutHeight)) {
+        throw new Error('layoutHeight should be a number or flex')
+      }
       this.state.layoutHeight = props.layoutHeight
     }
 

@@ -115,9 +115,12 @@ describe('react-flex-layout', function() {
     expect(flex2.offsetWidth).toBe(390)
   })
 
-  // TODO <Layout layoutWidth='100' /> --- need to coerce to a number
+  it('throws when invalid layout width is specified', function() {
+    expect(() => TestUtils.renderIntoDocument(<Layout layoutWidth='100' />)).toThrow()
+  })
+
   // TODO Children of Layout is rendered properly
   // TODO Multiple nested, one horizontal, one vertical
   // TODO Text content <Layout>Foo</Layout>
-  // TODO Children of layout must specify layoutHeight or layoutWidth 
+  // TODO Children of layout must specify layoutHeight or layoutWidth
 })
