@@ -64,7 +64,7 @@ export default class LayoutSplitter extends React.Component {
         newPositionHandler = (currentPosition) => {
           let delta = downPosition - currentPosition
           let newSize = originalSize + delta
-          layout2.setWidth(newSize)
+          layout2[updateFunctionName](newSize)
         }
       } else if (isLayout2Flex) {
         // Layout 1 has fixed size
