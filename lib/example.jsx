@@ -3,7 +3,7 @@ import Layout from './react-flex-layout.jsx'
 import LayoutSplitter from './react-flex-layout-splitter.jsx'
 import domready from 'domready'
 import LocationBar from 'location-bar'
-var locationBar = new LocationBar();
+let locationBar = new LocationBar();
 
 class Horizontal extends React.Component {
   constructor(props) {
@@ -59,6 +59,36 @@ class HorizontalResizer extends React.Component {
   }
 }
 
+class BothFixedHorizontalResizer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <div style={{border: '1px solid #000', height: 200, width: 313}}>
+     <Layout fill='container'>
+      <Layout layoutWidth={100}>Column1</Layout>
+      <LayoutSplitter />
+      <Layout layoutWidth={200}>Column2</Layout>
+    </Layout>
+    </div>
+  }
+}
+
+class VerticalResizer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <Layout>
+      <Layout layoutHeight={200}>Row1</Layout>
+      <LayoutSplitter />
+      <Layout layoutHeight='flex'>Row2</Layout>
+    </Layout>
+  }
+}
+
 class Example extends React.Component {
   constructor(props) {
     super(props)
@@ -75,8 +105,14 @@ class Example extends React.Component {
     locationBar.route(/threecolumn/, () => {
       this.setState({page: <ThreeColumn />})
     })
-    locationBar.route(/horizontalresize/, () => {
+    locationBar.route(/oneflexhorizontalresize/, () => {
       this.setState({page: <HorizontalResizer />})
+    })
+    locationBar.route(/bothfixedhorizontalresize/, () => {
+      this.setState({page: <BothFixedHorizontalResizer />})
+    })
+    locationBar.route(/verticalresize/, () => {
+      this.setState({page: <VerticalResizer />})
     })
     locationBar.start()
   }
@@ -88,7 +124,9 @@ class Example extends React.Component {
         <a href='#horizontal'>Horizontal</a> |
         <a href='#fixedright'>Fixed right column</a> |
         <a href='#threecolumn'>Three column</a> |
-        <a href='#horizontalresize'>Horizontal Splitter</a>
+        <a href='#oneflexhorizontalresize'>Horizontal Splitter</a> |
+        <a href='#bothfixedhorizontalresize'>Both fixed Horizontal Splitter</a> |
+        <a href='#verticalresize'>Vertical Splitter</a>
       </Layout>
       <Layout layoutHeight='flex'>
         {example}

@@ -119,5 +119,5 @@ describe('react-flex-layout', function() {
   // TODO Children of Layout is rendered properly
   // TODO Multiple nested, one horizontal, one vertical
   // TODO Text content <Layout>Foo</Layout>
-  // TODO When props of child changes flex layout should be recalculated
+  // TODO Children of layout must specify layoutHeight or layoutWidth 
 })

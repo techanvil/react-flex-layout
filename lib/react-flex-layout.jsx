@@ -69,6 +69,9 @@ export default class Layout extends React.Component {
       for (let i = 0; i < this.props.children.length; i++) {
         var childDefinition = this.props.children[i]
         var childType = childDefinition.type
+        if (childType === Layout && !childDefinition.props.layoutWidth && !childDefinition.props.layoutHeight) {
+          throw 'Child Layouts must have either layoutWidth or layoutHeight set'
+        }
 
         if (childType === Layout || childType === LayoutSplitter) {
           let child = this.refs['layout' + i]
@@ -86,9 +89,18 @@ export default class Layout extends React.Component {
       }
       if (numberOfFlexWidths > 0) {
         newFlexDimentions.width = (this.state.layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
-      }
-      if (numberOfFlexHeights > 0) {
+      } else if (numberOfFlexHeights > 0) {
         newFlexDimentions.height = (this.state.layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
+      }
+
+      let isHorizontal = numberOfFlexWidths > 0 || totalAllocatedWidth > 0
+      let isVertical = numberOfFlexHeights > 0 || totalAllocatedHeight > 0
+      if (isHorizontal && isVertical) {
+        throw 'You can only specify layoutHeight or layoutWidth at a single level'
+      } else if (isHorizontal) {
+        newFlexDimentions.orientation = 'horizontal'
+      } else if (isVertical) {
+        newFlexDimentions.orientation = 'vertical'
       }
     }
 
@@ -122,7 +134,7 @@ export default class Layout extends React.Component {
             containerWidth: width,
             ref: 'layout' + count
           }
-          if (calculatedFlexDimentions.width) {
+          if (calculatedFlexDimentions.orientation === 'horizontal') {
             let childStyle = child.props.style || {}
             childStyle.float = 'left'
             newProps.style = childStyle
@@ -131,6 +143,11 @@ export default class Layout extends React.Component {
           return cloned
         } else if (child.type === LayoutSplitter) {
           let newProps = {
+            layoutChanged: this.childLayoutChanged.bind(this),
+            orientation: calculatedFlexDimentions.orientation,
+            containerHeight: height,
+            containerWidth: width,
+            ref: 'layout' + count,
             hideSelection: () => {
               this.setState({ hideSelection: true })
             },
