@@ -1,7 +1,6 @@
 import React from 'react'
-import Layout from './react-flex-layout.jsx'
 
-export default class LayoutSplitter extends Layout {
+export default class LayoutSplitter extends React.Component {
   constructor(props) {
     super(props)
 
@@ -24,8 +23,8 @@ export default class LayoutSplitter extends Layout {
 
   move(event) {
     if (this.state.active) {
-      let layout1 = this.props.previousLayout
-      let layout2 = this.props.nextLayout
+      let layout1 = this.props.getPreviousLayout()
+      let layout2 = this.props.getNextLayout()
       if (layout1 && layout2) {
         let current = this.props.orientation === 'horizontal' ? event.clientX : event.clientY
         let position = this.state.position
@@ -36,17 +35,17 @@ export default class LayoutSplitter extends Layout {
           throw 'Do not support resizing two flex Layouts'
         } else if (isLayout1Flex) {
           // Layout 2 has fixed size
-          let newSize = layout2.props.layoutSize - (current - position)
+          let newSize = layout2.props.layoutWidth - (current - position)
           layout2.setState({layoutWidth: newSize})
         } else if (isLayout2Flex) {
           // Layout 1 has fixed size
-          let newSize = layout1.props.layoutSize - (position - current)
+          let newSize = layout1.props.layoutWidth - (position - current)
           layout1.setState({layoutWidth: newSize})
         } else {
           // Both are fixed width
           let delta = position - current
-          let panel1NewSize = layout1.props.layoutSize - delta
-          let panel2NewSize = layout2.props.layoutSize + delta
+          let panel1NewSize = layout1.props.layoutWidth - delta
+          let panel2NewSize = layout2.props.layoutWidth + delta
           layout1.setState({layoutWidth: panel1NewSize})
           layout2.setState({layoutWidth: panel2NewSize})
         }
@@ -59,7 +58,6 @@ export default class LayoutSplitter extends Layout {
   }
 
   handleDown(event) {
-    debugger
     let position = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
     this.setState({
         active: true,
@@ -70,7 +68,8 @@ export default class LayoutSplitter extends Layout {
   render() {
     //let orientation = this.props.orientation;
     let classes = ['Resizer', 'horizontal'];
-    return <span className={classes.join(' ')} onMouseDown={this.handleDown.bind(this)} />
+    let downHandler = this.handleDown.bind(this)
+    return <span className={classes.join(' ')} onMouseDown={downHandler} />
   }
 }
 
@@ -78,4 +77,8 @@ LayoutSplitter.propTypes = {
   orientation: React.PropTypes.string,
   previousLayout: React.PropTypes.object,
   nextLayout: React.PropTypes.object
+}
+LayoutSplitter.defaultProps = {
+  layoutWidth: 11,
+  layoutHeight: 11
 }

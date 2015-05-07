@@ -1,9 +1,22 @@
 import React from 'react'
+import LayoutSplitter from './react-flex-layout-splitter.jsx'
 
 export default class Layout extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { width: 0, height: 0 }
+    this.state = {
+      layoutWidth: 0,
+      layoutHeight: 0
+    }
+    if (props.layoutWidth !== 'flex') {
+      // TODO throw if not number
+      this.state.layoutWidth = props.layoutWidth
+    }
+    if (props.layoutHeight !== 'flex') {
+      // TODO throw if not number
+      this.state.layoutHeight = props.layoutHeight
+    }
+
     this.handleResize = this.handleResize.bind(this)
   }
 
@@ -18,74 +31,113 @@ export default class Layout extends React.Component {
 
   handleResize() {
     if (this.props.fill === 'window' && window) {
-      this.setLayoutDimensions(window.innerWidth, window.innerHeight)
-    } else {
+      this.setState({ layoutWidth: window.innerWidth, layoutHeight: window.innerHeight })
+    } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
       var domNode = React.findDOMNode(this)
-      this.setLayoutDimensions(domNode.parentElement.clientWidth, domNode.parentElement.clientHeight)
+      this.setState({ layoutWidth: domNode.parentElement.clientWidth, layoutHeight: domNode.parentElement.clientHeight })
     }
   }
 
-  setLayoutDimensions(layoutWidth, layoutHeight) {
-    if (this.state.layoutWidth !== layoutWidth ||
-        this.state.layoutHeight !== layoutHeight) {
+  setWidth(newWidth) {
+    this.state.layoutWidth = newWidth
+    this.setState(this.state)
+    if (this.props.layoutChanged) {
+      this.props.layoutChanged()
+    }
+  }
 
-      var state = { layoutWidth: layoutWidth, layoutHeight: layoutHeight}
-      if (this.props.children) {
+  setHeight(newHeight) {
+    this.setState({layoutHeight: newHeight})
+    if (this.props.layoutChanged) {
+      this.props.layoutChanged()
+    }
+  }
 
-        var numberOfFlexWidths = 0
-        var totalAllocatedWidth = 0
-        var numberOfFlexHeights = 0
-        var totalAllocatedHeight = 0
-        for (var i = 0; i < this.props.children.length; i++) {
-          var child = this.props.children[i]
-          if (child.type === Layout) {
-            if (child.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
-            else if (this.isNumber(child.props.layoutWidth)) { totalAllocatedWidth += child.props.layoutWidth }
-            if (child.props.layoutHeight === 'flex') { numberOfFlexHeights++ }
-            else if (this.isNumber(child.props.layoutHeight)) { totalAllocatedHeight += child.props.layoutHeight }
-          }
-        }
-        if (numberOfFlexHeights > 0 && numberOfFlexWidths > 0) {
-          throw 'Cannot have layout children with both flex widths and heights'
-        }
-        if (numberOfFlexWidths > 0) {
-          state.calculatedFlexWidth = (layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
-        }
-        if (numberOfFlexHeights > 0) {
-          state.calculatedFlexHeight = (layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
+  childLayoutChanged() {
+    // State hasn't changed but render relies on child properties
+    this.setState(this.state)
+  }
+
+  recalculateFlexLayout() {
+    var newFlexDimentions = {}
+    if (this.props.children) {
+      var numberOfFlexWidths = 0
+      var totalAllocatedWidth = 0
+      var numberOfFlexHeights = 0
+      var totalAllocatedHeight = 0
+      for (var i = 0; i < this.props.children.length; i++) {
+        var childDefinition = this.props.children[i]
+        var childType = childDefinition.type
+
+        if (childType === Layout || childType === LayoutSplitter) {
+          var child = this.refs['layout' + i]
+          if (childDefinition.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
+          else if (!child && this.isNumber(childDefinition.props.layoutWidth)) { totalAllocatedWidth += childDefinition.props.layoutWidth }
+          else if (child && this.isNumber(child.state.layoutWidth)) { totalAllocatedWidth += child.state.layoutWidth }
+
+          if (childDefinition.props.layoutHeight === 'flex') { numberOfFlexHeights++ }
+          else if (!child && this.isNumber(childDefinition.props.layoutHeight)) { totalAllocatedHeight += childDefinition.props.layoutHeight }
+          else if (child && this.isNumber(child.state.layoutHeight)) { totalAllocatedHeight += child.state.layoutHeight }
         }
       }
-      this.setState(state)
+      if (numberOfFlexHeights > 0 && numberOfFlexWidths > 0) {
+        throw 'Cannot have layout children with both flex widths and heights'
+      }
+      if (numberOfFlexWidths > 0) {
+        newFlexDimentions.width = (this.state.layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
+      }
+      if (numberOfFlexHeights > 0) {
+        newFlexDimentions.height = (this.state.layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
+      }
     }
+
+    return newFlexDimentions
   }
 
   render() {
-    var width = this.props.layoutWidth === 'flex'
-        ? this.props.calculatedFlexWidth
-        : (this.props.layoutWidth || this.state.layoutWidth)
-    var height = this.props.layoutHeight === 'flex'
-        ? this.props.calculatedFlexHeight
-        : (this.props.layoutHeight || this.state.layoutHeight)
+    var width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.state.layoutWidth || this.props.containerWidth)
+    var height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.state.layoutHeight || this.props.containerHeight)
+
+    if (!width || !height) {
+      // We don't know our size yet (maybe initial render)
+      return <div />
+    }
     var style = this.props.style || {}
     style.overflow = 'hidden'
     style.width = width
     style.height = height
-    var calculatedFlexWidth = this.state.calculatedFlexWidth
-    var calculatedFlexHeight = this.state.calculatedFlexHeight
+    var count = -1
+    var calculatedFlexDimentions = this.recalculateFlexLayout()
     var children = React.Children.map(
       this.props.children,
       child => {
-        if (child._isReactElement) {
+        count++
+        if (child.type === Layout) {
           var newProps = {
-            calculatedFlexWidth: calculatedFlexWidth,
-            calculatedFlexHeight: calculatedFlexHeight,
-            layoutWidth: child.props.layoutWidth || width,
-            layoutHeight: child.props.layoutHeight || height
+            layoutChanged: this.childLayoutChanged.bind(this),
+            calculatedFlexWidth: calculatedFlexDimentions.width,
+            calculatedFlexHeight: calculatedFlexDimentions.height,
+            containerHeight: height,
+            containerWidth: width,
+            ref: 'layout' + count
           }
-          if (calculatedFlexWidth){
+          if (calculatedFlexDimentions.width) {
             var childStyle = child.props.style || {}
             childStyle.float = 'left'
             newProps.style = childStyle
+          }
+          var cloned = React.cloneElement(child, newProps)
+          return cloned
+        } else if (child.type === LayoutSplitter) {
+          var newProps = {
+            getPreviousLayout: () => {
+              var index = this.props.children.indexOf(child)
+              return this.refs['layout' + (index - 1)]
+            },
+            getNextLayout: () => {
+              var index = this.props.children.indexOf(child)
+              return this.refs['layout' + (index + 1)]
+            }
           }
           var cloned = React.cloneElement(child, newProps)
           return cloned

@@ -97,8 +97,27 @@ describe('react-flex-layout', function() {
       expect(flex2.offsetHeight).toBe(400)
   })
 
+  it('when child is resized flex widths are recalculated', function() {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var toRender = <Layout fill='container'>
+        <Layout layoutWidth={100} />
+        <Layout layoutWidth='flex' />
+      </Layout>
+    var layout = React.render(toRender, container)
+    layout.refs.layout0.setWidth(110)
+    var domLayout = React.findDOMNode(layout)
+    var fixed = domLayout.children[0]
+    var flex2 = domLayout.children[1]
+    expect(fixed.offsetWidth).toBe(110)
+    expect(flex2.offsetWidth).toBe(390)
+  })
+
   // TODO <Layout layoutWidth='100' /> --- need to coerce to a number
   // TODO Children of Layout is rendered properly
   // TODO Multiple nested, one horizontal, one vertical
   // TODO Text content <Layout>Foo</Layout>
+  // TODO When props of child changes flex layout should be recalculated
 })
