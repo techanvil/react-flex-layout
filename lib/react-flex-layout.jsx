@@ -5,8 +5,6 @@ export default class Layout extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      layoutWidth: 0,
-      layoutHeight: 0,
       hideSelection: false
     }
     if (props.layoutWidth !== 'flex') {
@@ -32,10 +30,14 @@ export default class Layout extends React.Component {
 
   handleResize() {
     if (this.props.fill === 'window' && window) {
-      this.setState({ layoutWidth: window.innerWidth, layoutHeight: window.innerHeight })
+      this.state.layoutWidth = window.innerWidth
+      this.state.layoutHeight = window.innerHeight
+      this.setState(this.state)
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
       let domNode = React.findDOMNode(this)
-      this.setState({ layoutWidth: domNode.parentElement.clientWidth, layoutHeight: domNode.parentElement.clientHeight })
+      this.state.layoutWidth = domNode.parentElement.clientWidth
+      this.state.layoutHeight = domNode.parentElement.clientHeight
+      this.setState(this.state)
     }
   }
 
@@ -48,7 +50,8 @@ export default class Layout extends React.Component {
   }
 
   setHeight(newHeight) {
-    this.setState({layoutHeight: newHeight})
+    this.state.layoutHeight = newHeight
+    this.setState(this.state)
     if (this.props.layoutChanged) {
       this.props.layoutChanged()
     }
@@ -88,9 +91,11 @@ export default class Layout extends React.Component {
         throw 'Cannot have layout children with both flex widths and heights'
       }
       if (numberOfFlexWidths > 0) {
-        newFlexDimentions.width = (this.state.layoutWidth - totalAllocatedWidth) / numberOfFlexWidths
+        var thisWidth = this.state.layoutWidth || this.props.containerWidth
+        newFlexDimentions.width = (thisWidth - totalAllocatedWidth) / numberOfFlexWidths
       } else if (numberOfFlexHeights > 0) {
-        newFlexDimentions.height = (this.state.layoutHeight - totalAllocatedHeight) / numberOfFlexHeights
+        var thisHeight = this.state.layoutHeight || this.props.containerHeight
+        newFlexDimentions.height = (thisHeight - totalAllocatedHeight) / numberOfFlexHeights
       }
 
       let isHorizontal = numberOfFlexWidths > 0 || totalAllocatedWidth > 0
