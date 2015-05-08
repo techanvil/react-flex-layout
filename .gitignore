@@ -1,1 +1,4 @@
 node_modules/
+demo/demo.js
+npm-debug.log
+dist/react-flex-layout.js
