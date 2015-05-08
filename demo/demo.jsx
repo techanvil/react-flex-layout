@@ -88,6 +88,25 @@ class VerticalResizer extends React.Component {
   }
 }
 
+class TwoColoredRows extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    // Here we highlight the columns so it is easy to see if the outer layout
+    // is not being resized.
+    return <Layout>
+      <Layout layoutHeight={200}>
+        <div style={{height: '100%', background: 'cyan'}}>Row 2</div>
+      </Layout>
+      <Layout layoutHeight='flex'>
+        <div style={{height: '100%', background: 'pink'}}>Row 2</div>
+      </Layout>
+    </Layout>
+  }
+}
+
 class Nested extends React.Component {
   constructor(props) {
     super(props)
@@ -98,9 +117,7 @@ class Nested extends React.Component {
       <Layout layoutWidth={100}>Column1</Layout>
       <LayoutSplitter />
       <Layout layoutWidth='flex'>
-        <Layout layoutHeight={200}>Row 1</Layout>
-        <LayoutSplitter />
-        <Layout layoutHeight='flex'>Row 2</Layout>
+        <TwoColoredRows />
       </Layout>
     </Layout>
   }
