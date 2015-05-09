@@ -3,17 +3,21 @@ module.exports = {
   output: {
     path: './dist',
     filename: 'react-flex-layout.js',
-    library: 'react-flex-layout',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'umd'
   },
   module: {
     loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'},
-      { test: /\.jsx$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'},
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+      { test: /\.jsx$/, exclude: /node_modules/, loader: 'babel-loader'},
       { test: /\.css$/, loader: 'style!css' }
     ]
   },
   externals: {
-    react: true
+    react: {
+      root: 'React',
+      commonjs: 'react',
+      commonjs2: 'react',
+      amd: 'react'
+    }
   }
 }
