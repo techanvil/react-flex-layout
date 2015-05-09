@@ -9,7 +9,7 @@
     "prebuild:demo": "npm run build:dist",
     "build:demo": "webpack --config _webpack.demo.config.js",
     "build:dist": "webpack --config _webpack.dist.config.js --optimize-minimize",
-    "test": "karma start --autowatch --no-single-run",
+    "test": "karma start _karma.conf.js --autowatch --no-single-run",
     "prepublish": "npm run build:dist"
   },
   "author": "Adaptive Consulting, Jake Ginnivan",

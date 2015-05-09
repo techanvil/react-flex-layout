@@ -21,6 +21,9 @@ describe('react-flex-layout', function() {
     var domLayout = React.findDOMNode(layout)
     expect(domLayout.style.height).toBe(window.innerHeight + 'px')
     expect(domLayout.style.width).toBe(window.innerWidth + 'px')
+    expect(domLayout.style.position).toBe('absolute')
+    expect(domLayout.style.left).toBe('0px')
+    expect(domLayout.style.top).toBe('0px')
   })
 
   it('can fill the containing element', function() {

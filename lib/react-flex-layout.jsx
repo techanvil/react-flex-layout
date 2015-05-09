@@ -126,10 +126,6 @@ export default class Layout extends React.Component {
       // We don't know our size yet (maybe initial render)
       return <div />
     }
-    let style = this.props.style || {}
-    style.overflow = 'hidden'
-    style.width = width
-    style.height = height
     let count = -1
     let calculatedFlexDimentions = this.recalculateFlexLayout()
     let children = React.Children.map(
@@ -181,14 +177,23 @@ export default class Layout extends React.Component {
         return child
       })
 
-      let className = null
-      if (this.props.className) {
-        className = this.props.className
-      }
-      if (this.state.hideSelection) {
-        if (className) { className += ' ' }
-        className += 'hideSelection'
-      }
+    let className = null
+    if (this.props.className) {
+      className = this.props.className
+    }
+    if (this.state.hideSelection) {
+      if (className) { className += ' ' }
+      className += 'hideSelection'
+    }
+    let style = this.props.style || {}
+    style.overflow = 'hidden'
+    style.width = width
+    style.height = height
+    if (this.props.fill === 'window') {
+      style.position = 'absolute'
+      style.top = 0
+      style.left = 0
+    }
     return <div style={style} className={className}>{children}</div>
   }
 
