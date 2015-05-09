@@ -9,7 +9,7 @@ class Dev extends React.Component {
 
   render() {
     return <Layout fill='window'>
-      <Layout layoutWidth={100}>Column1</Layout>
+      <Layout layoutWidth={100}><div style={{height: '500px'}}>Column1</div></Layout>
       <LayoutSplitter />
       <Layout layoutWidth='flex'>Column2</Layout>
     </Layout>

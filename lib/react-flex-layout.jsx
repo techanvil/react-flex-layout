@@ -186,7 +186,7 @@ export default class Layout extends React.Component {
       className += 'hideSelection'
     }
     let style = this.props.style || {}
-    style.overflow = 'hidden'
+    style.overflow = 'auto'
     style.width = width
     style.height = height
     if (this.props.fill === 'window') {
