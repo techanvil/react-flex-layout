@@ -1,6 +1,9 @@
 ## react-flex-layout
 react-flex-layout combines ideas from [react-split-pane](https://github.com/tomkp/react-split-pane) and [react-layout](https://github.com/jsdf/react-layout) into a single project which has good browser compatibility
 
+### Demo
+[View the demo](http://adaptiveconsulting.github.io/react-flex-layout)
+
 ### Usage
 ```
 var Layout = require('react-flex-layout').Layout
