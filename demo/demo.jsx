@@ -1,6 +1,5 @@
 import React from 'react'
-import Layout from './react-flex-layout.jsx'
-import LayoutSplitter from './react-flex-layout-splitter.jsx'
+import {Layout, LayoutSplitter} from '../lib/index.js'
 import domready from 'domready'
 import LocationBar from 'location-bar'
 let locationBar = new LocationBar();
