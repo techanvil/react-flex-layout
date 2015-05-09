@@ -1,6 +1,4 @@
 node_modules/
-demo/demo.js
 npm-debug.log
 dist/react-flex-layout.js
 dist/react-flex-layout.min.js
-demo.js
