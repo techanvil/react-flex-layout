@@ -1,4 +1,5 @@
 import React from 'react'
+import './react-flex-layout-splitter.css'
 
 export default class LayoutSplitter extends React.Component {
   constructor(props) {

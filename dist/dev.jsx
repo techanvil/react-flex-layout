@@ -1,5 +1,5 @@
 import React from 'react'
-import {Layout} from './../lib/index.js'
+import {Layout, LayoutSplitter} from './../lib/index.js'
 import domready from 'domready'
 
 class Dev extends React.Component {
@@ -10,6 +10,7 @@ class Dev extends React.Component {
   render() {
     return <Layout fill='window'>
       <Layout layoutWidth={100}>Column1</Layout>
+      <LayoutSplitter />
       <Layout layoutWidth='flex'>Column2</Layout>
     </Layout>
   }
