@@ -2,7 +2,7 @@ module.exports = {
   entry: ['./lib/index.js'],
   output: {
     path: './dist',
-    filename: 'react-flex-layout.js',
+    filename: 'react-flex-layout.min.js',
     libraryTarget: 'umd'
   },
   module: {
