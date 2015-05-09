@@ -1,7 +1,7 @@
 {
   "name": "react-flex-layout",
   "version": "0.9.0",
-  "description": "",
+  "description": "Simple layouts for full screen React applications",
   "main": "dist/react-flex-layout.min.js",
   "scripts": {
     "dev": "webpack-dev-server --progress --colors --hot -d --config _webpack.config.js",
