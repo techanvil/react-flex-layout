@@ -103,7 +103,7 @@ export default class LayoutSplitter extends React.Component {
 
   render() {
     //let orientation = this.props.orientation;
-    let classes = ['Resizer', this.props.orientation];
+    let classes = ['LayoutSplitter', this.props.orientation];
     let style = {
       width: this.state.layoutWidth || this.props.containerWidth,
       height: this.state.layoutHeight || this.props.containerHeight

@@ -4,14 +4,14 @@
   "description": "",
   "main": "dist/react-flex-layout.js",
   "scripts": {
-    "dev": "webpack-dev-server --progress --colors --hot -d",
+    "dev": "webpack-dev-server --progress --colors --hot -d --config _webpack.config.js",
     "build:dev": "webpack",
-    "prebuild:demo": "npm run build:prod",
-    "build:demo": "webpack --config webpack.demo.config.js",
-    "build:prod": "webpack --config webpack.dist.config.js",
+    "prebuild:demo": "npm run build:dist",
+    "build:demo": "webpack --config _webpack.demo.config.js",
+    "build:dist": "webpack --config _webpack.dist.config.js",
     "test": "karma start --autowatch --no-single-run"
   },
-  "author": "",
+  "author": "Adaptive Consulting, Jake Ginnivan",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^5.2.3",
