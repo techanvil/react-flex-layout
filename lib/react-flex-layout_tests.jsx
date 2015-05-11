@@ -1,6 +1,7 @@
 import React from 'react/addons'
 import expect from 'expect'
 import Layout from './react-flex-layout.jsx'
+import layoutEvents from './react-flex-layout-events.jsx'
 
 var TestUtils = React.addons.TestUtils
 document.body.style.margin = 0
@@ -187,7 +188,7 @@ describe('react-flex-layout', function() {
       expect(verticalContainerNode.children[1].offsetHeight).toBe(400)
   })
 
-  it('Resizes self when its parent resizes', () => {
+  it('Resizes when layout-changed is triggered', () => {
     var container = document.createElement('div')
     container.style.height = '500px'
     container.style.width = '500px'
@@ -198,8 +199,9 @@ describe('react-flex-layout', function() {
       </Layout>
     var layout = React.render(toRender, container)
     var layoutNode = React.findDOMNode(layout)
-    
+
     container.style.height = '400px'
+    layoutEvents.emit('layout-changed')
 
     expect(layoutNode.children[0].offsetHeight).toBe(100)
     expect(layoutNode.children[1].offsetHeight).toBe(300)

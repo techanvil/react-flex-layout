@@ -1,4 +1,5 @@
 import React from 'react'
+import layoutEvents from './react-flex-layout-events.jsx'
 import './react-flex-layout-splitter.css'
 
 export default class LayoutSplitter extends React.Component {
@@ -28,6 +29,7 @@ export default class LayoutSplitter extends React.Component {
     if (this.state.active) {
       let currentPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
       this.state.newPositionHandler(currentPosition)
+      layoutEvents.emit('layout-changed')
     }
   }
 

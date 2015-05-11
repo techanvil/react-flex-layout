@@ -1,5 +1,6 @@
 import React from 'react'
 import LayoutSplitter from './react-flex-layout-splitter.jsx'
+import layoutEvents from './react-flex-layout-events.jsx'
 
 export default class Layout extends React.Component {
   constructor(props) {
@@ -25,22 +26,31 @@ export default class Layout extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize)
+    layoutEvents.addListener('layout-changed', this.handleResize)
     this.handleResize()
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
+    layoutEvents.removeListener('layout-changed', this.handleResize)
   }
 
   handleResize() {
+    let newWidth = this.state.layoutWidth
+    let newHeight = this.state.layoutHeight
     if (this.props.fill === 'window' && window) {
-      this.state.layoutWidth = window.innerWidth
-      this.state.layoutHeight = window.innerHeight
-      this.setState(this.state)
+      newWidth = window.innerWidth
+      newHeight = window.innerHeight
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
-      let domNode = React.findDOMNode(this)
-      this.state.layoutWidth = domNode.parentElement.clientWidth
-      this.state.layoutHeight = domNode.parentElement.clientHeight
+        const domNode = React.findDOMNode(this)
+        newHeight = domNode.parentElement.clientHeight
+        newWidth = domNode.parentElement.clientWidth
+    }
+    // Only setState if the available size has actually changed.
+    if (this.state.layoutWidth !== newWidth ||
+        this.state.layoutHeight !== newHeight) {
+      this.state.layoutWidth = newWidth
+      this.state.layoutHeight = newHeight
       this.setState(this.state)
     }
   }
@@ -113,7 +123,7 @@ export default class Layout extends React.Component {
         newFlexDimentions.width = (thisWidth - totalAllocatedWidth) / numberOfFlexWidths
       } else if (numberOfFlexHeights > 0) {
         var thisHeight = this.state.layoutHeight || this.props.containerHeight
-        totalAllocatedWidth = totalAllocatedWidth + numberOfSplitters * LayoutSplitter.defaultSize
+        totalAllocatedHeight = totalAllocatedHeight + numberOfSplitters * LayoutSplitter.defaultSize
         newFlexDimentions.height = (thisHeight - totalAllocatedHeight) / numberOfFlexHeights
       }
 
@@ -229,8 +239,6 @@ export default class Layout extends React.Component {
 
 Layout.propTypes = {
   hideSelection: React.PropTypes.bool,
-  layoutWidth: React.PropTypes.object,
-  layoutHeight: React.PropTypes.object,
   minWidth: React.PropTypes.number,
   minHeight: React.PropTypes.number
 }
