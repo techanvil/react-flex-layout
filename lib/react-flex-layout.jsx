@@ -45,12 +45,20 @@ export default class Layout extends React.Component {
     }
   }
 
+  getWidth() {
+    return React.findDOMNode(this).offsetWidth;
+  }
+
   setWidth(newWidth) {
     this.state.layoutWidth = newWidth
     this.setState(this.state)
     if (this.props.layoutChanged) {
       this.props.layoutChanged()
     }
+  }
+
+  getHeight() {
+    return React.findDOMNode(this).offsetHeight;
   }
 
   setHeight(newHeight) {
@@ -215,5 +223,13 @@ export default class Layout extends React.Component {
 }
 
 Layout.propTypes = {
-  hideSelection: React.PropTypes.bool
+  hideSelection: React.PropTypes.bool,
+  layoutWidth: React.PropTypes.number,
+  layoutHeight: React.PropTypes.number,
+  minWidth: React.PropTypes.number,
+  minHeight: React.PropTypes.number
+}
+Layout.defaultProps = {
+  minWidth: 50,
+  minHeight: 50
 }

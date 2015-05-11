@@ -51,28 +51,33 @@ export default class LayoutSplitter extends React.Component {
   handleMouseDown(event) {
     let downPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
     let layoutProp = this.props.orientation === 'horizontal' ? 'layoutWidth' : 'layoutHeight'
+    let minSizeProp = this.props.orientation === 'horizontal' ? 'minWidth' : 'minHeight'
     let updateFunctionName = this.props.orientation === 'horizontal' ? 'setWidth' : 'setHeight'
+    let getSizeFunctionName = this.props.orientation === 'horizontal' ? 'getWidth' : 'getHeight'
     let layout1 = this.props.getPreviousLayout()
     let layout2 = this.props.getNextLayout()
-    if ((layout1.props.layoutWidth === 'flex' && layout2.props.layoutWidth === 'flex') ||
-        (layout1.props.layoutHeight === 'flex' && layout2.props.layoutHeight === 'flex')) {
+    let isLayout1Flex = layout1.props[layoutProp] === 'flex'
+    let isLayout2Flex = layout2.props[layoutProp] === 'flex'
+    if (isLayout1Flex && isLayout2Flex) {
       throw new Error('You cannot place a LayoutSplitter between two flex Layouts')
     }
 
+    const availableSize = layout1[getSizeFunctionName]() + layout2[getSizeFunctionName]();
+    const layout1MinSize = layout1.props[minSizeProp]
+    const layout2MinSize = layout2.props[minSizeProp]
+    const layout1MaxSize = availableSize - layout2MinSize
+    const layout2MaxSize = availableSize - layout1MinSize
+
     if (layout1 && layout2) {
       this.props.hideSelection()
-      let isLayout1Flex = layout1.props[layoutProp] === 'flex'
-      let isLayout2Flex = layout2.props[layoutProp] === 'flex'
       let newPositionHandler
-
-      if (isLayout1Flex && isLayout2Flex) {
-        throw new Error('Do not support resizing two flex Layouts')
-      } else if (isLayout1Flex) {
+      if (isLayout1Flex) {
         // Layout 2 has fixed size
         let originalSize = layout2.state[layoutProp]
         newPositionHandler = (currentPosition) => {
           let delta = downPosition - currentPosition
           let newSize = originalSize + delta
+          newSize = Math.max(layout2MinSize, Math.min(newSize, layout2MaxSize))
           layout2[updateFunctionName](newSize)
         }
       } else if (isLayout2Flex) {
@@ -81,17 +86,19 @@ export default class LayoutSplitter extends React.Component {
         newPositionHandler = (currentPosition) => {
           let delta = currentPosition - downPosition
           let newSize = originalSize + delta
+          newSize = Math.max(layout1MinSize, Math.min(newSize, layout1MaxSize))
           layout1[updateFunctionName](newSize)
         }
       }
       else {
         // Both are fixed width
         let originalSize1 = layout1.state[layoutProp]
-        let originalSize2 = layout2.state[layoutProp]
         newPositionHandler = (currentPosition) => {
           let delta = currentPosition - downPosition
-          layout1[updateFunctionName](originalSize1 + delta)
-          layout2[updateFunctionName](originalSize2 - delta)
+          const layout1NewSize = Math.max(layout1MinSize, Math.min(originalSize1 + delta, layout1MaxSize))
+          const layout2NewSize = availableSize - layout1NewSize
+          layout1[updateFunctionName](layout1NewSize)
+          layout2[updateFunctionName](layout2NewSize)
         }
       }
 
