@@ -48,6 +48,14 @@ export default class LayoutSplitter extends React.Component {
     }
   }
 
+  markEventAsHandled(event) {
+    if (event.preventDefault) {
+      event.preventDefault()
+    } else {
+      event.returnValue = false
+    }
+  }
+
   handleMouseDown(event) {
     let downPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
     let layoutProp = this.props.orientation === 'horizontal' ? 'layoutWidth' : 'layoutHeight'
@@ -56,20 +64,22 @@ export default class LayoutSplitter extends React.Component {
     let getSizeFunctionName = this.props.orientation === 'horizontal' ? 'getWidth' : 'getHeight'
     let layout1 = this.props.getPreviousLayout()
     let layout2 = this.props.getNextLayout()
-    let isLayout1Flex = layout1.props[layoutProp] === 'flex'
-    let isLayout2Flex = layout2.props[layoutProp] === 'flex'
-    if (isLayout1Flex && isLayout2Flex) {
-      throw new Error('You cannot place a LayoutSplitter between two flex Layouts')
-    }
-
-    const availableSize = layout1[getSizeFunctionName]() + layout2[getSizeFunctionName]();
-    const layout1MinSize = layout1.props[minSizeProp]
-    const layout2MinSize = layout2.props[minSizeProp]
-    const layout1MaxSize = availableSize - layout2MinSize
-    const layout2MaxSize = availableSize - layout1MinSize
 
     if (layout1 && layout2) {
-      this.props.hideSelection()
+      const isLayout1Flex = layout1.props[layoutProp] === 'flex'
+      const isLayout2Flex = layout2.props[layoutProp] === 'flex'
+      if (isLayout1Flex && isLayout2Flex) {
+        throw new Error('You cannot place a LayoutSplitter between two flex Layouts')
+      }
+
+      const availableSize = layout1[getSizeFunctionName]() + layout2[getSizeFunctionName]();
+      const layout1MinSize = layout1.props[minSizeProp]
+      const layout2MinSize = layout2.props[minSizeProp]
+      const layout1MaxSize = availableSize - layout2MinSize
+      const layout2MaxSize = availableSize - layout1MinSize
+
+      this.markEventAsHandled(event)
+
       let newPositionHandler
       if (isLayout1Flex) {
         // Layout 2 has fixed size
