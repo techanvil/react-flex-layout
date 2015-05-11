@@ -81,6 +81,7 @@ export default class Layout extends React.Component {
       let totalAllocatedWidth = 0
       let numberOfFlexHeights = 0
       let totalAllocatedHeight = 0
+      let numberOfSplitters = 0
       let i = 0
       React.Children.map(this.props.children, childDefinition => {
         var childType = childDefinition.type
@@ -88,7 +89,9 @@ export default class Layout extends React.Component {
           throw new Error('Child Layouts must have either layoutWidth or layoutHeight set')
         }
 
-        if (childType === Layout || childType === LayoutSplitter) {
+        if (childType === LayoutSplitter) {
+          numberOfSplitters++
+        } else if (childType === Layout) {
           let child = this.refs['layout' + i]
           if (childDefinition.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
           else if (!child && this.isNumber(childDefinition.props.layoutWidth)) { totalAllocatedWidth += childDefinition.props.layoutWidth }
@@ -106,9 +109,11 @@ export default class Layout extends React.Component {
       }
       if (numberOfFlexWidths > 0) {
         var thisWidth = this.state.layoutWidth || this.props.containerWidth
+        totalAllocatedWidth = totalAllocatedWidth + numberOfSplitters * LayoutSplitter.defaultSize
         newFlexDimentions.width = (thisWidth - totalAllocatedWidth) / numberOfFlexWidths
       } else if (numberOfFlexHeights > 0) {
         var thisHeight = this.state.layoutHeight || this.props.containerHeight
+        totalAllocatedWidth = totalAllocatedWidth + numberOfSplitters * LayoutSplitter.defaultSize
         newFlexDimentions.height = (thisHeight - totalAllocatedHeight) / numberOfFlexHeights
       }
 
@@ -224,8 +229,8 @@ export default class Layout extends React.Component {
 
 Layout.propTypes = {
   hideSelection: React.PropTypes.bool,
-  layoutWidth: React.PropTypes.number,
-  layoutHeight: React.PropTypes.number,
+  layoutWidth: React.PropTypes.object,
+  layoutHeight: React.PropTypes.object,
   minWidth: React.PropTypes.number,
   minHeight: React.PropTypes.number
 }

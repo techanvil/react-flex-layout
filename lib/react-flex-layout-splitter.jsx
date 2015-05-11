@@ -17,16 +17,6 @@ export default class LayoutSplitter extends React.Component {
   componentDidMount() {
     this.document.addEventListener('mouseup', this.handleMouseUp)
     this.document.addEventListener('mousemove', this.handleMouseMove)
-    if (this.props.orientation === 'horizontal') {
-      this.state.layoutWidth = this.props.layoutWidth || 11
-      this.setState(this.state)
-      this.props.layoutChanged()
-    }
-    if (this.props.orientation === 'vertical') {
-      this.state.layoutHeight = this.props.layoutHeight || 11
-      this.setState(this.state)
-      this.props.layoutChanged()
-    }
   }
 
   componentWillUnmount() {
@@ -123,8 +113,8 @@ export default class LayoutSplitter extends React.Component {
     //let orientation = this.props.orientation;
     let classes = ['LayoutSplitter', this.props.orientation];
     let style = {
-      width: this.state.layoutWidth || this.props.containerWidth,
-      height: this.state.layoutHeight || this.props.containerHeight
+      width: this.props.orientation === 'horizontal' ? LayoutSplitter.defaultSize : this.props.containerWidth,
+      height: this.props.orientation === 'vertical' ? LayoutSplitter.defaultSize : this.props.containerHeight
     }
 
     return <div className={classes.join(' ')} style={style} onMouseDown={this.handleMouseDown} />
@@ -136,3 +126,5 @@ LayoutSplitter.propTypes = {
   getPreviousLayout: React.PropTypes.func,
   getNextLayout: React.PropTypes.func
 }
+
+LayoutSplitter.defaultSize = 11
