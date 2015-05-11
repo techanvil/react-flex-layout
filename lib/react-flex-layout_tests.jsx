@@ -1,6 +1,7 @@
 import React from 'react/addons'
 import expect from 'expect'
 import Layout from './react-flex-layout.jsx'
+import layoutEvents from './react-flex-layout-events.jsx'
 
 var TestUtils = React.addons.TestUtils
 document.body.style.margin = 0
@@ -185,6 +186,25 @@ describe('react-flex-layout', function() {
       expect(verticalContainerNode.children[1].offsetWidth).toBe(400)
       expect(verticalContainerNode.children[0].offsetHeight).toBe(400)
       expect(verticalContainerNode.children[1].offsetHeight).toBe(400)
+  })
+
+  it('Resizes when layout-changed is triggered', () => {
+    var container = document.createElement('div')
+    container.style.height = '500px'
+    container.style.width = '500px'
+    document.body.appendChild(container)
+    var toRender = <Layout fill='container'>
+        <Layout layoutHeight={100}>Header</Layout>
+        <Layout layoutHeight='flex'>Content</Layout>
+      </Layout>
+    var layout = React.render(toRender, container)
+    var layoutNode = React.findDOMNode(layout)
+
+    container.style.height = '400px'
+    layoutEvents.emit('layout-changed')
+
+    expect(layoutNode.children[0].offsetHeight).toBe(100)
+    expect(layoutNode.children[1].offsetHeight).toBe(300)
   })
 
   it('throws when invalid layout width is specified', function() {

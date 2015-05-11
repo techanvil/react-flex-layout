@@ -1,5 +1,6 @@
 import React from 'react'
 import LayoutSplitter from './react-flex-layout-splitter.jsx'
+import layoutEvents from './react-flex-layout-events.jsx'
 
 export default class Layout extends React.Component {
   constructor(props) {
@@ -25,24 +26,37 @@ export default class Layout extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize)
+    layoutEvents.addListener('layout-changed', this.handleResize)
     this.handleResize()
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
+    layoutEvents.removeListener('layout-changed', this.handleResize)
   }
 
   handleResize() {
+    let newWidth = this.state.layoutWidth
+    let newHeight = this.state.layoutHeight
     if (this.props.fill === 'window' && window) {
-      this.state.layoutWidth = window.innerWidth
-      this.state.layoutHeight = window.innerHeight
-      this.setState(this.state)
+      newWidth = window.innerWidth
+      newHeight = window.innerHeight
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
-      let domNode = React.findDOMNode(this)
-      this.state.layoutWidth = domNode.parentElement.clientWidth
-      this.state.layoutHeight = domNode.parentElement.clientHeight
+        const domNode = React.findDOMNode(this)
+        newHeight = domNode.parentElement.clientHeight
+        newWidth = domNode.parentElement.clientWidth
+    }
+    // Only setState if the available size has actually changed.
+    if (this.state.layoutWidth !== newWidth ||
+        this.state.layoutHeight !== newHeight) {
+      this.state.layoutWidth = newWidth
+      this.state.layoutHeight = newHeight
       this.setState(this.state)
     }
+  }
+
+  getWidth() {
+    return React.findDOMNode(this).offsetWidth;
   }
 
   setWidth(newWidth) {
@@ -51,6 +65,10 @@ export default class Layout extends React.Component {
     if (this.props.layoutChanged) {
       this.props.layoutChanged()
     }
+  }
+
+  getHeight() {
+    return React.findDOMNode(this).offsetHeight;
   }
 
   setHeight(newHeight) {
@@ -73,6 +91,7 @@ export default class Layout extends React.Component {
       let totalAllocatedWidth = 0
       let numberOfFlexHeights = 0
       let totalAllocatedHeight = 0
+      let numberOfSplitters = 0
       let i = 0
       React.Children.map(this.props.children, childDefinition => {
         var childType = childDefinition.type
@@ -80,7 +99,9 @@ export default class Layout extends React.Component {
           throw new Error('Child Layouts must have either layoutWidth or layoutHeight set')
         }
 
-        if (childType === Layout || childType === LayoutSplitter) {
+        if (childType === LayoutSplitter) {
+          numberOfSplitters++
+        } else if (childType === Layout) {
           let child = this.refs['layout' + i]
           if (childDefinition.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
           else if (!child && this.isNumber(childDefinition.props.layoutWidth)) { totalAllocatedWidth += childDefinition.props.layoutWidth }
@@ -98,9 +119,11 @@ export default class Layout extends React.Component {
       }
       if (numberOfFlexWidths > 0) {
         var thisWidth = this.state.layoutWidth || this.props.containerWidth
+        totalAllocatedWidth = totalAllocatedWidth + numberOfSplitters * LayoutSplitter.defaultSize
         newFlexDimentions.width = (thisWidth - totalAllocatedWidth) / numberOfFlexWidths
       } else if (numberOfFlexHeights > 0) {
         var thisHeight = this.state.layoutHeight || this.props.containerHeight
+        totalAllocatedHeight = totalAllocatedHeight + numberOfSplitters * LayoutSplitter.defaultSize
         newFlexDimentions.height = (thisHeight - totalAllocatedHeight) / numberOfFlexHeights
       }
 
@@ -215,5 +238,11 @@ export default class Layout extends React.Component {
 }
 
 Layout.propTypes = {
-  hideSelection: React.PropTypes.bool
+  hideSelection: React.PropTypes.bool,
+  minWidth: React.PropTypes.number,
+  minHeight: React.PropTypes.number
+}
+Layout.defaultProps = {
+  minWidth: 50,
+  minHeight: 50
 }
