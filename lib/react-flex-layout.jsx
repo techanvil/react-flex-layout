@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import LayoutSplitter from './react-flex-layout-splitter.jsx'
 import layoutEvents from './react-flex-layout-events.jsx'
 
@@ -42,7 +43,7 @@ export default class Layout extends React.Component {
       newWidth = window.innerWidth
       newHeight = window.innerHeight
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
-        const domNode = React.findDOMNode(this)
+        const domNode = ReactDOM.findDOMNode(this)
         newHeight = domNode.parentElement.clientHeight
         newWidth = domNode.parentElement.clientWidth
     }
@@ -56,7 +57,7 @@ export default class Layout extends React.Component {
   }
 
   getWidth() {
-    return React.findDOMNode(this).offsetWidth;
+    return ReactDOM.findDOMNode(this).offsetWidth;
   }
 
   setWidth(newWidth) {
@@ -68,7 +69,7 @@ export default class Layout extends React.Component {
   }
 
   getHeight() {
-    return React.findDOMNode(this).offsetHeight;
+    return ReactDOM.findDOMNode(this).offsetHeight;
   }
 
   setHeight(newHeight) {
@@ -240,7 +241,8 @@ export default class Layout extends React.Component {
 Layout.propTypes = {
   hideSelection: React.PropTypes.bool,
   minWidth: React.PropTypes.number,
-  minHeight: React.PropTypes.number
+  minHeight: React.PropTypes.number,
+  onResize:React.PropTypes.func
 }
 Layout.defaultProps = {
   minWidth: 50,

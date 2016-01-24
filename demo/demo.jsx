@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import {Layout, LayoutSplitter} from '../lib/index.js'
 import domready from 'domready'
 import LocationBar from 'location-bar'
@@ -176,5 +177,5 @@ class Example extends React.Component {
 domready(() => {
   var container = document.createElement('div')
   document.body.appendChild(container)
-  React.render(<Example />, container)
+  ReactDOM.render(<Example />, container)
 })

@@ -35,8 +35,13 @@ export default class LayoutSplitter extends React.Component {
 
   handleMouseUp() {
     if (this.state.active) {
-      this.setState({ active: false })
-      this.props.restoreSelection()
+      this.setState({ active: false },()=>{
+        this.props.restoreSelection()
+        if ( this.props.onResizeComplete ) {
+          this.props.onResizeComplete();
+        }
+      });
+
     }
   }
 
@@ -107,6 +112,10 @@ export default class LayoutSplitter extends React.Component {
       this.setState({
         active: true,
         newPositionHandler: newPositionHandler
+      },()=>{
+        if ( this.props.onResizing ) {
+          this.props.onResizing();
+        }
       })
     }
   }
@@ -126,7 +135,9 @@ export default class LayoutSplitter extends React.Component {
 LayoutSplitter.propTypes = {
   orientation: React.PropTypes.string,
   getPreviousLayout: React.PropTypes.func,
-  getNextLayout: React.PropTypes.func
+  getNextLayout: React.PropTypes.func,
+  onResizing:React.PropTypes.func,
+  onResizeComplete:React.PropTypes.func
 }
 
 LayoutSplitter.defaultSize = 11
