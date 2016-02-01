@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import {Layout, LayoutSplitter} from './../lib/index.js'
 import domready from 'domready'
 
@@ -19,5 +20,5 @@ class Dev extends React.Component {
 domready(() => {
   var container = document.createElement('div')
   document.body.appendChild(container)
-  React.render(<Dev />, container)
+  ReactDOM.render(<Dev />, container)
 })
