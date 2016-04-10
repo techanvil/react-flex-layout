@@ -209,15 +209,12 @@ export default class Layout extends React.Component {
       if (className) { className += ' ' }
       className += 'hideSelection'
     }
-    let style = this.props.style || {}
-    style.overflow = 'auto'
-    style.width = width
-    style.height = height
-    if (this.props.fill === 'window') {
-      style.position = 'absolute'
-      style.top = 0
-      style.left = 0
-    }
+    const style = Object.assign({},
+       this.props.style,
+       {overflow: 'auto', width: width, height: height},
+       this.props.fill === 'window' ? {position: 'absolute', top: 0, left:0}: {}
+    )
+
     return <div style={style} className={className}>{children}</div>
   }
 
