@@ -4,7 +4,7 @@ import LayoutSplitter from './react-flex-layout-splitter.jsx'
 import layoutEvents from './react-flex-layout-events.jsx'
 
 export default class Layout extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       hideSelection: false
@@ -25,27 +25,27 @@ export default class Layout extends React.Component {
     this.handleResize = this.handleResize.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     window.addEventListener('resize', this.handleResize)
     layoutEvents.addListener('layout-changed', this.handleResize)
     this.handleResize()
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     window.removeEventListener('resize', this.handleResize)
     layoutEvents.removeListener('layout-changed', this.handleResize)
   }
 
-  handleResize() {
+  handleResize () {
     let newWidth = this.state.layoutWidth
     let newHeight = this.state.layoutHeight
     if (this.props.fill === 'window' && window) {
       newWidth = window.innerWidth
       newHeight = window.innerHeight
     } else if (!this.props.layoutWidth && !this.props.layoutHeight) {
-        const domNode = ReactDOM.findDOMNode(this)
-        newHeight = domNode.parentElement.clientHeight
-        newWidth = domNode.parentElement.clientWidth
+      const domNode = ReactDOM.findDOMNode(this)
+      newHeight = domNode.parentElement.clientHeight
+      newWidth = domNode.parentElement.clientWidth
     }
     // Only setState if the available size has actually changed.
     if (this.state.layoutWidth !== newWidth ||
@@ -56,11 +56,11 @@ export default class Layout extends React.Component {
     }
   }
 
-  getWidth() {
-    return ReactDOM.findDOMNode(this).offsetWidth;
+  getWidth () {
+    return ReactDOM.findDOMNode(this).offsetWidth
   }
 
-  setWidth(newWidth) {
+  setWidth (newWidth) {
     this.state.layoutWidth = newWidth
     this.setState(this.state)
     if (this.props.layoutChanged) {
@@ -68,11 +68,11 @@ export default class Layout extends React.Component {
     }
   }
 
-  getHeight() {
-    return ReactDOM.findDOMNode(this).offsetHeight;
+  getHeight () {
+    return ReactDOM.findDOMNode(this).offsetHeight
   }
 
-  setHeight(newHeight) {
+  setHeight (newHeight) {
     this.state.layoutHeight = newHeight
     this.setState(this.state)
     if (this.props.layoutChanged) {
@@ -80,12 +80,12 @@ export default class Layout extends React.Component {
     }
   }
 
-  childLayoutChanged() {
+  childLayoutChanged () {
     // State hasn't changed but render relies on child properties
     this.setState(this.state)
   }
 
-  recalculateFlexLayout() {
+  recalculateFlexLayout () {
     let newFlexDimentions = {}
     if (this.props.children) {
       let numberOfFlexWidths = 0
@@ -104,13 +104,13 @@ export default class Layout extends React.Component {
           numberOfSplitters++
         } else if (childType === Layout) {
           let child = this.refs['layout' + i]
-          if (childDefinition.props.layoutWidth === 'flex') { numberOfFlexWidths++ }
-          else if (!child && this.isNumber(childDefinition.props.layoutWidth)) { totalAllocatedWidth += childDefinition.props.layoutWidth }
-          else if (child && this.isNumber(child.state.layoutWidth)) { totalAllocatedWidth += child.state.layoutWidth }
+          if (childDefinition.props.layoutWidth === 'flex') numberOfFlexWidths++
+          else if (!child && this.isNumber(childDefinition.props.layoutWidth)) totalAllocatedWidth += childDefinition.props.layoutWidth
+          else if (child && this.isNumber(child.state.layoutWidth)) totalAllocatedWidth += child.state.layoutWidth
 
-          if (childDefinition.props.layoutHeight === 'flex') { numberOfFlexHeights++ }
-          else if (!child && this.isNumber(childDefinition.props.layoutHeight)) { totalAllocatedHeight += childDefinition.props.layoutHeight }
-          else if (child && this.isNumber(child.state.layoutHeight)) { totalAllocatedHeight += child.state.layoutHeight }
+          if (childDefinition.props.layoutHeight === 'flex') numberOfFlexHeights++
+          else if (!child && this.isNumber(childDefinition.props.layoutHeight)) totalAllocatedHeight += childDefinition.props.layoutHeight
+          else if (child && this.isNumber(child.state.layoutHeight)) totalAllocatedHeight += child.state.layoutHeight
         }
         i++
       })
@@ -142,7 +142,7 @@ export default class Layout extends React.Component {
     return newFlexDimentions
   }
 
-  render() {
+  render () {
     let width = this.props.layoutWidth === 'flex' ? this.props.calculatedFlexWidth : (this.state.layoutWidth || this.props.containerWidth)
     let height = this.props.layoutHeight === 'flex' ? this.props.calculatedFlexHeight : (this.state.layoutHeight || this.props.containerHeight)
 
@@ -212,25 +212,25 @@ export default class Layout extends React.Component {
     const style = Object.assign({},
        this.props.style,
        {overflow: 'auto', width: width, height: height},
-       this.props.fill === 'window' ? {position: 'absolute', top: 0, left:0}: {}
+       this.props.fill === 'window' ? {position: 'absolute', top: 0, left: 0} : {}
     )
 
     return <div style={style} className={className}>{children}</div>
   }
 
-  isNumber(value) {
-    return typeof value === 'number';
+  isNumber (value) {
+    return typeof value === 'number'
   }
 
-  clearSelection() {
+  clearSelection () {
     if (window.getSelection) {
       if (window.getSelection().empty) {  // Chrome
-        window.getSelection().empty();
+        window.getSelection().empty()
       } else if (window.getSelection().removeAllRanges) {  // Firefox
-        window.getSelection().removeAllRanges();
+        window.getSelection().removeAllRanges()
       }
     } else if (document.selection) {  // IE?
-      document.selection.empty();
+      document.selection.empty()
     }
   }
 }
@@ -239,7 +239,7 @@ Layout.propTypes = {
   hideSelection: React.PropTypes.bool,
   minWidth: React.PropTypes.number,
   minHeight: React.PropTypes.number,
-  onResize:React.PropTypes.func
+  onResize: React.PropTypes.func
 }
 Layout.defaultProps = {
   minWidth: 50,

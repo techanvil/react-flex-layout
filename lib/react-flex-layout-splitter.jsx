@@ -3,7 +3,7 @@ import layoutEvents from './react-flex-layout-events.jsx'
 import './react-flex-layout-splitter.css'
 
 export default class LayoutSplitter extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.document = props.document || document
 
@@ -15,37 +15,36 @@ export default class LayoutSplitter extends React.Component {
     this.handleMouseDown = this.handleMouseDown.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.document.addEventListener('mouseup', this.handleMouseUp)
     this.document.addEventListener('mousemove', this.handleMouseMove)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.document.removeEventListener('mouseup', this.handleMouseUp)
     this.document.removeEventListener('mousemove', this.handleMouseMove)
   }
 
-  handleMouseMove(event) {
+  handleMouseMove (event) {
     if (this.state.active) {
-      let currentPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
+      let currentPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY
       this.state.newPositionHandler(currentPosition)
       layoutEvents.emit('layout-changed')
     }
   }
 
-  handleMouseUp() {
+  handleMouseUp () {
     if (this.state.active) {
-      this.setState({ active: false },()=>{
+      this.setState({ active: false }, () => {
         this.props.restoreSelection()
-        if ( this.props.onResizeComplete ) {
-          this.props.onResizeComplete();
+        if (this.props.onResizeComplete) {
+          this.props.onResizeComplete()
         }
-      });
-
+      })
     }
   }
 
-  markEventAsHandled(event) {
+  markEventAsHandled (event) {
     if (event.preventDefault) {
       event.preventDefault()
     } else {
@@ -53,8 +52,8 @@ export default class LayoutSplitter extends React.Component {
     }
   }
 
-  handleMouseDown(event) {
-    let downPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY;
+  handleMouseDown (event) {
+    let downPosition = this.props.orientation === 'horizontal' ? event.clientX : event.clientY
     let layoutProp = this.props.orientation === 'horizontal' ? 'layoutWidth' : 'layoutHeight'
     let minSizeProp = this.props.orientation === 'horizontal' ? 'minWidth' : 'minHeight'
     let updateFunctionName = this.props.orientation === 'horizontal' ? 'setWidth' : 'setHeight'
@@ -69,7 +68,7 @@ export default class LayoutSplitter extends React.Component {
         throw new Error('You cannot place a LayoutSplitter between two flex Layouts')
       }
 
-      const availableSize = layout1[getSizeFunctionName]() + layout2[getSizeFunctionName]();
+      const availableSize = layout1[getSizeFunctionName]() + layout2[getSizeFunctionName]()
       const layout1MinSize = layout1.props[minSizeProp]
       const layout2MinSize = layout2.props[minSizeProp]
       const layout1MaxSize = availableSize - layout2MinSize
@@ -96,8 +95,7 @@ export default class LayoutSplitter extends React.Component {
           newSize = Math.max(layout1MinSize, Math.min(newSize, layout1MaxSize))
           layout1[updateFunctionName](newSize)
         }
-      }
-      else {
+      } else {
         // Both are fixed width
         let originalSize1 = layout1.state[layoutProp]
         newPositionHandler = (currentPosition) => {
@@ -112,17 +110,17 @@ export default class LayoutSplitter extends React.Component {
       this.setState({
         active: true,
         newPositionHandler: newPositionHandler
-      },()=>{
-        if ( this.props.onResizing ) {
-          this.props.onResizing();
+      }, () => {
+        if (this.props.onResizing) {
+          this.props.onResizing()
         }
       })
     }
   }
 
-  render() {
-    //let orientation = this.props.orientation;
-    let classes = ['LayoutSplitter', this.props.orientation];
+  render () {
+    // let orientation = this.props.orientation;
+    let classes = ['LayoutSplitter', this.props.orientation]
     let style = {
       width: this.props.orientation === 'horizontal' ? LayoutSplitter.defaultSize : this.props.containerWidth,
       height: this.props.orientation === 'vertical' ? LayoutSplitter.defaultSize : this.props.containerHeight
@@ -136,8 +134,8 @@ LayoutSplitter.propTypes = {
   orientation: React.PropTypes.string,
   getPreviousLayout: React.PropTypes.func,
   getNextLayout: React.PropTypes.func,
-  onResizing:React.PropTypes.func,
-  onResizeComplete:React.PropTypes.func
+  onResizing: React.PropTypes.func,
+  onResizeComplete: React.PropTypes.func
 }
 
 LayoutSplitter.defaultSize = 11
